@@ -1,0 +1,64 @@
+#include <iostream>
+#include <string>
+#include <cmath>
+
+double deltatb(double& y, double const& deltay, double& v) {
+  double const mass = 70.;
+  double const g = 9.8;
+  double F = -0.5*v*abs(v);
+  double a = g + F/mass;
+  double vf = sqrt(2 * a * deltay + v*v);
+  double vavg = (vf+v)/2;
+  double dt;
+
+  dt = deltay/vavg;
+  
+  //Now also set the initial velocity for the next step.
+  //This gets returned to the main program because we use references (&)
+  v = vf;
+  
+  return dt;
+}
+
+
+int main() {
+  //state purpose to cout
+  std::cout << "Analytical Mechanics problem C 2.1 (a) " << std::endl;
+
+  //define variables given
+  double const height = 32000.; //32 km
+  double const g = 9.8;
+
+  std::cout << "Part (a) is the simple case, analytically solvable.\n"
+	    << "Fall from height " << height << " m with constant g=" << g
+	    << "m/s^2. ";
+
+  double texactsquared = 2*height/g;
+  double texact = sqrt(texactsquared);
+  
+  std::cout << "This takes " << texact << " seconds.\n" << std::endl;
+
+  std::cout << "Now let's add air resistance. We need to "
+	    << "solve numerically." << std::endl;
+
+  //We need to add the time for each part of the fall
+
+  //define some variable we'll use below
+  unsigned int const numsteps = 9000; //can be anything, experiment!
+  double const deltay = height/numsteps;
+
+  //define initial conditions before we enter the loop
+  double t = 0;
+  double y = height;
+  double v = 0;
+  
+  //add the durations
+  for (unsigned int i=0; i!=numsteps; ++i) {
+    t += deltatb(y, deltay, v);
+    y -= deltay;
+  }
+  
+  std::cout << "It takes approximately " << t << " seconds." << std::endl;
+  
+  return 0;
+}
